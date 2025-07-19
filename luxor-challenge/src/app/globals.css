@@ -1,0 +1,54 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Dark theme overrides for Material-UI */
+body {
+  background-color: #1a1a1a !important;
+  color: #d4af37 !important;
+}
+
+/* Override Material-UI default colors */
+.MuiPaper-root {
+  background-color: #2d2d2d !important;
+}
+
+.MuiDialog-paper {
+  background-color: #2d2d2d !important;
+}
+
+.MuiMenu-paper {
+  background-color: #2d2d2d !important;
+}
+
+.MuiPopover-paper {
+  background-color: #2d2d2d !important;
+}
+
+/* Ensure consistent text colors */
+.MuiTypography-root {
+  color: inherit;
+}
+
+/* Override default Material-UI colors for better dark theme */
+.MuiChip-root {
+  border-radius: 16px;
+}
+
+/* Custom scrollbar for dark theme */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #1a1a1a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #d4af37;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #e6c547;
+}
