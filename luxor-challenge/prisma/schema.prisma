@@ -1,0 +1,51 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+  binaryTargets = ["native", "debian-openssl-3.0.x"]
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id    Int    @id @default(autoincrement())
+  name  String
+  email String @unique
+  collections Collection[] @relation("UserCollections")
+  bids        Bid[]
+}
+
+model Collection {
+  id          Int    @id @default(autoincrement())
+  name        String
+  description String
+  stocks      Int
+  price       Float
+  owner       User   @relation("UserCollections", fields: [ownerId], references: [id])
+  ownerId     Int
+  bids        Bid[]
+}
+
+model Bid {
+  id           Int        @id @default(autoincrement())
+  collection   Collection @relation(fields: [collectionId], references: [id])
+  collectionId Int
+  price        Float
+  user         User       @relation(fields: [userId], references: [id])
+  userId       Int
+  status       BidStatus
+  createdAt    DateTime   @default(now())
+}
+
+enum BidStatus {
+  pending
+  accepted
+  rejected
+}
