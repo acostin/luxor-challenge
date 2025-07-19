@@ -199,6 +199,108 @@ Our tests include both **success** and **error** scenarios:
 - `DELETE /api/bids` - Delete a bid (sends bid ID in request body)
 - `POST /api/bids/accept` - Accept a bid and reject others
 
+## 🏗️ Architecture & Operations
+
+### 📊 Application Monitoring
+
+#### Health Checks & Observability
+- **Health Check Endpoint**: Implement `/api/health` to monitor application status
+- **Database Connectivity**: Monitor PostgreSQL connection pool and query performance
+- **API Response Times**: Track endpoint performance with metrics collection
+- **Error Rate Monitoring**: Alert on increased error rates or failed requests
+- **Resource Utilization**: Monitor CPU, memory, and disk usage
+
+#### Monitoring Tools
+- **Application Performance Monitoring**: Sentry or DataDog
+- **Logging**: Structured logging with Winston
+- **Metrics**: Prometheus + Grafana for custom metrics and dashboards
+- **Database Monitoring**: pgAdmin or similar for PostgreSQL performance insights
+
+#### Alerting Strategy
+- **Critical Alerts**: Application down, database connection failures
+- **Warning Alerts**: High response times (>2s), increased error rates (>5%)
+- **Info Alerts**: High traffic, successful deployments
+
+### ⚡ Scalability & Performance
+
+#### Database Optimization
+- **Indexing Strategy**: 
+  - Primary keys on `id` fields
+  - Composite indexes on frequently queried combinations (e.g., `collectionId + status` for bids)
+- **Query Optimization**: 
+  - Use Prisma's `select` to fetch only needed fields
+- **Read Replicas**: Separate read/write operations for high-traffic scenarios
+
+#### Caching Strategy
+- **Redis Implementation**:
+  - Cache frequently accessed collections and user data
+  - Session storage for user authentication
+  - Rate limiting counters
+- **CDN**: Static assets (images, CSS, JS) served via CDN
+- **Browser Caching**: Proper cache headers for static resources
+
+#### API Performance
+- **Rate Limiting**: Implement per-user and per-endpoint rate limits
+- **Request Validation**: Early validation to prevent unnecessary processing
+- **Response Compression**: Gzip compression for API responses
+- **Pagination**: Efficient cursor-based pagination instead of offset-based
+
+#### Infrastructure Scaling
+- **Horizontal Scaling**: Multiple application instances behind a load balancer
+- **Auto-scaling**: Scale based on CPU/memory usage and request volume
+- **Microservices**: Split into separate services (collections, bids, users, notifications)
+- **Message Queues**: Use Redis or RabbitMQ for async processing of bid notifications
+
+### 🤔 Trade-offs & Lessons Learned
+
+#### Technical Decisions Made
+
+**✅ What Worked Well:**
+- **Next.js API Routes**: Simplified full-stack development with shared types
+- **Prisma ORM**: Type-safe database operations and excellent developer experience
+- **Material UI**: Rapid UI development with consistent design system
+
+**⚠️ Trade-offs Made:**
+
+1. **Simplicity vs. Scalability**
+   - **Choice**: Single Next.js application with API routes
+   - **Trade-off**: Easier development but harder to scale individual services
+   - **Alternative**: Microservices architecture with separate services
+
+2. **Database Design vs. Flexibility**
+   - **Choice**: Simple relational schema with foreign keys
+   - **Trade-off**: Easy to understand but limited query flexibility
+   - **Alternative**: Document-based schema or hybrid approach
+
+3. **Real-time vs. Simplicity**
+   - **Choice**: Manual refresh after user actions for bid status changes
+   - **Trade-off**: Simpler implementation but requires user interaction to see updates
+   - **Alternative**: WebSocket implementation for instant real-time updates
+
+#### What I Would Do Differently
+
+**With More Time:**
+- **Implement WebSockets**: Real-time bid updates and notifications
+- **Add Authentication**: JWT-based auth with refresh tokens
+- **Database Migrations**: More comprehensive migration strategy
+- **Error Boundaries**: React error boundaries for better UX
+- **E2E Testing**: Cypress for full user journey testing
+
+**With More Resources:**
+- **Microservices Architecture**: Separate services for collections, bids, users
+- **Event-Driven Architecture**: Event sourcing for bid state changes
+- **Advanced Caching**: Multi-layer caching (application, database, CDN)
+- **Monitoring Stack**: Full observability with distributed tracing
+- **CI/CD Pipeline**: Automated testing, building, and deployment
+- **Container Orchestration**: Kubernetes for production deployment
+
+**Production Considerations:**
+- **Security**: Input validation, SQL injection prevention, XSS protection
+- **Backup Strategy**: Automated database backups and disaster recovery
+- **Environment Management**: Proper staging, testing, and production environments
+- **Documentation**: API documentation with OpenAPI/Swagger
+- **Performance Testing**: Load testing with realistic user scenarios
+
 ## Future Enhancements
 
 Here are some planned improvements and features for future iterations that we could make given more time:
@@ -325,8 +427,8 @@ src/
 
 ## Performance Features
 
-- **Server-side pagination** - Only loads data you need
-- **Lazy loading** - API requests on page changes
+- **Client-side pagination** - Only loads data you need via API calls
+- **Lazy loading** - API requests on page changes and bid expansion
 - **Efficient queries** - Optimized database queries with Prisma
 - **Responsive design** - Works on mobile and desktop
 - **Optimized rendering** - Reduced component re-renders
